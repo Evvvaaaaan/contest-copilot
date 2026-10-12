@@ -68,6 +68,7 @@ async function listProjects() {
   return projects;
 }
 async function select(id) {
+  $('simulation-feedback-dialog').close();
   if(selected)drafts.set(selected,$('message').value);
   $('message').value=drafts.get(id)||'';
   selected=id;localStorage.setItem('contest-project',id);previousMessages='';current=null;
@@ -159,16 +160,111 @@ function renderRecords(data) {
   recordGroup(body,'첨부 문서 확인',documents,(entry,item)=>{entry.append(node('p',item.path||item.name||item.id,'record-title'));recordText(entry,'읽기 상태',({read:'읽음',complete:'읽음',partial:'일부만 읽음',unread:'미확인',failed:'읽기 실패',extracted:'텍스트 추출됨',unsupported:'직접 확인 필요',unavailable:'내용 확인 불가'})[item.status]||item.status);recordText(entry,'확인 범위',item.pages_read||item.coverage);if(item.pages)recordText(entry,'기록된 분량',`${item.pages.length}개 페이지 또는 논리 구간`);recordText(entry,'미확인 범위',item.unread_pages||item.missing_pages);recordText(entry,'제약',item.note||item.limitations||item.error);});
 }
 function renderSimulations(data) {
-  const plan=data.simulation_plan,runs=data.simulations||[];
-  $('simulation-section').hidden=!plan&&!runs.length;
-  $('simulation-count').textContent=runs.length?`${runs.length}회 기록`:'';
+  const plan=data.simulation_plan,runs=data.simulations||[],paths=simulationPaths(data);
+  $('simulation-section').hidden=!plan&&!runs.length&&!paths.length;
+  $('simulation-count').textContent=paths.length?`${paths.length}회 기록`:'';
   const planBody=$('simulation-plan');planBody.replaceChildren();
   if(plan){const config=plan.value;recordText(planBody,'질문',config.question);recordText(planBody,'대상',`${config.candidate_id} · ${config.candidate_version}`);recordText(planBody,'구성',`${config.participants?.length||0}명 · 최대 ${config.max_rounds}라운드`);recordText(planBody,'환경',config.baseline);for(const actor of config.participants||[]){const entry=node('details',undefined,'record-entry');entry.append(node('summary',actor.role||actor.id));recordText(entry,'목표',actor.goals);recordText(entry,'제약',actor.constraints);recordText(entry,'자원',actor.resources);recordText(entry,'구성 근거',actor.basis);planBody.append(entry);}}
   $('start-simulation').hidden=!plan;
   const body=$('simulations');body.replaceChildren();
+  if(paths.length){const button=node('button','참여자 피드백·대화 보기','quiet feedback-open');button.type='button';button.onclick=()=>openSimulationFeedback(data.id,paths);body.append(button);}
   const statuses={running:'실행 중',completed:'라운드 종료',stopped:'중단됨',failed:'실행 오류'};
   for(const run of runs){const entry=node('div',undefined,'record-entry');entry.append(node('p',`${run.candidate_id} · ${run.candidate_version}`,'record-title'));recordText(entry,'진행',`${statuses[run.status]||run.status} · ${run.completed_rounds||0}라운드 완료`);recordText(entry,'가상 반응',`접촉 ${run.exposed_participants||0}명 중 현재 채택 ${run.current_adopters||0}명 · 거절 ${run.current_rejecters||0}명`);recordText(entry,'기록',run.run_id);body.append(entry);}
 }
+// Read persisted events through the existing confined file endpoint, including older servers.
+function simulationPaths(data) {
+  return [...new Set([...(data.simulations||[]).map(run=>`simulations/${run.run_id}/run.json`),
+    ...(data.files||[]).map(file=>file.path).filter(path=>/^simulations\/[^/]+\/run\.json$/.test(path))])];
+}
+let feedback = {project:null,paths:[],runs:[],request:0};
+const actionNames = {try:'체험',adopt:'채택',reject:'거절',ask:'질문',share:'공유',wait:'보류'};
+const decisionNames = {undecided:'미정',adopted:'채택',rejected:'거절'};
+function chooseOptions(select,options,previous) {
+  select.replaceChildren(...options.map(([value,label])=>{const option=node('option',label);option.value=value;return option;}));
+  if(options.some(([value])=>value===previous))select.value=previous;
+}
+async function openSimulationFeedback(project,paths) {
+  feedback.project=project;feedback.paths=paths;feedback.runs=[];
+  $('feedback-kind').value='all';
+  $('simulation-feedback-dialog').showModal();
+  await loadSimulationFeedback();
+}
+async function loadSimulationFeedback() {
+  const request=++feedback.request,project=feedback.project,paths=[...feedback.paths];
+  const previous=$('feedback-run').value;
+  $('feedback-status').textContent='저장된 기록을 읽고 있습니다.';
+  $('refresh-feedback').disabled=true;$('feedback-download').hidden=true;
+  $('feedback-content').replaceChildren();
+  for(const id of ['feedback-run','feedback-person','feedback-round','feedback-kind'])$(id).disabled=true;
+  const results=await Promise.allSettled(paths.map(async path=>{
+    const run=await api(`/api/projects/${project}/file?path=${encodeURIComponent(path)}`);
+    if(!run.config||!Array.isArray(run.config.participants)||!Array.isArray(run.events)||!run.state)throw new Error('기록 형식 확인 필요');
+    return {path,run};
+  }));
+  if(request!==feedback.request||project!==selected||!$('simulation-feedback-dialog').open)return;
+  feedback.runs=results.filter(result=>result.status==='fulfilled').map(result=>result.value);
+  const missing=results.length-feedback.runs.length;
+  $('feedback-status').textContent=missing?`${missing}개 기록을 읽지 못했습니다. 새로고침하거나 원본 파일을 확인해 주세요.`:'저장된 원문을 표시합니다. 실행 중이면 새로고침으로 이후 기록을 확인할 수 있습니다.';
+  $('refresh-feedback').disabled=false;
+  chooseOptions($('feedback-run'),feedback.runs.map(({path,run},i)=>[path,`${run.config.candidate_id} · ${run.config.candidate_version} · 실행 ${i+1}`]),previous);
+  for(const id of ['feedback-run','feedback-person','feedback-round','feedback-kind'])$(id).disabled=!feedback.runs.length;
+  renderFeedbackFilters(false);
+}
+function selectedFeedbackRun() {return feedback.runs.find(item=>item.path===$('feedback-run').value);}
+function renderFeedbackFilters(reset) {
+  const item=selectedFeedbackRun(),people=$('feedback-person'),rounds=$('feedback-round');
+  const participants=item?.run.config.participants||[],events=item?.run.events||[];
+  chooseOptions(people,[['','모든 참여자'],...participants.map(person=>[person.id,`${person.role} (${person.id})`])],reset?'':people.value);
+  const numbers=[...new Set(events.filter(event=>event.type==='action').map(event=>event.round))].sort((a,b)=>a-b);
+  chooseOptions(rounds,[['','모든 라운드'],...numbers.map(round=>[String(round),`${round}라운드`])],reset?'':rounds.value);
+  renderFeedbackEvents();
+}
+function renderFeedbackEvents() {
+  const body=$('feedback-content');body.replaceChildren();
+  const item=selectedFeedbackRun();
+  if(!item){body.append(node('p','표시할 실행 기록이 없습니다.','muted'));return;}
+  const {run,path}=item,actor=$('feedback-person').value,round=$('feedback-round').value,messages=$('feedback-kind').value==='messages';
+  const profiles=run.config.participants,names=new Map(profiles.map(person=>[person.id,person.role]));
+  const label=id=>`${names.get(id)||'참여자'} (${id})`;
+  const actions=run.events.filter(event=>event.type==='action'&&event.action);
+  const shown=actions.filter(event=>(!actor||event.action.actor_id===actor||event.action.target_id===actor)&&(!round||String(event.round)===round)&&(!messages||['ask','share'].includes(event.action.type)));
+  $('feedback-download').hidden=false;
+  $('feedback-download').href=`/api/projects/${feedback.project}/file?path=${encodeURIComponent(path)}`;
+  body.append(node('h3',`${run.config.candidate_id} · ${run.config.candidate_version}`),node('p',run.config.question,'feedback-question'));
+  const status={running:'진행 중',completed:'라운드 종료',stopped:'중단됨'};
+  body.append(node('p',`${profiles.length}명 · ${run.state.completed_rounds}라운드 완료 · ${status[run.state.status]||run.state.status} · 표시 ${shown.length} / 전체 행동 ${actions.length}건`,'muted'));
+  const profileBox=node('details',undefined,'feedback-profiles');profileBox.append(node('summary','참여자 설정과 최종 판단'));
+  for(const person of profiles.filter(person=>!actor||person.id===actor)){
+    const card=node('section',undefined,'feedback-profile');card.append(node('h4',label(person.id)));
+    recordText(card,'목표',person.goals);recordText(card,'제약',person.constraints);recordText(card,'구성 근거',person.basis);
+    recordText(card,'현재 판단',decisionNames[run.state.participants?.[person.id]?.decision]);profileBox.append(card);
+  }
+  body.append(profileBox);
+  if(!actions.some(event=>['ask','share'].includes(event.action.type)))body.append(node('p','이 실행에는 참여자 간 대화 기록이 없습니다. 아래 의견은 각 참여자가 자신의 행동에 붙인 이유입니다.','feedback-empty'));
+  if(!shown.length)body.append(node('p',actions.length?'선택한 조건에 해당하는 기록이 없습니다.':'아직 기록된 참여자 행동이 없습니다.','feedback-empty'));
+  let lastRound=null;
+  for(const event of shown){
+    if(event.round!==lastRound){body.append(node('h3',`${event.round}라운드`,'feedback-round-heading'));lastRound=event.round;}
+    const action=event.action,card=node('article',undefined,'feedback-event');
+    card.append(node('h4',`${label(action.actor_id)} · ${actionNames[action.type]||action.type}`));
+    if(['ask','share'].includes(action.type)){
+      card.append(node('p',`받는 사람: ${label(action.target_id)}`,'feedback-recipient'));
+      card.append(node('blockquote',action.content,'feedback-message'));
+    }
+    card.append(node('p','기록된 의견 · 행동 이유','feedback-label'),node('p',action.reason,'feedback-reason'));
+    if(event.before&&event.after){
+      const before=event.before.decision,after=event.after.decision;
+      recordText(card,'판단 변화',before===after?`${decisionNames[after]||after} 유지`:`${decisionNames[before]||before}에서 ${decisionNames[after]||after}(으)로 변경`);
+      if(event.before.tried!==event.after.tried)recordText(card,'체험 상태','미체험에서 체험으로 변경');
+    }
+    body.append(card);
+  }
+}
+$('close-simulation-feedback').onclick=()=>$('simulation-feedback-dialog').close();
+$('simulation-feedback-dialog').addEventListener('close',()=>{feedback.request++;});
+$('refresh-feedback').onclick=loadSimulationFeedback;
+$('feedback-run').onchange=()=>renderFeedbackFilters(true);
+for(const id of ['feedback-person','feedback-round','feedback-kind'])$(id).onchange=renderFeedbackEvents;
 function renderSubmission(data) {
   const spec=data.submission_spec,manifest=data.submission;
   $('submission-section').hidden=!spec&&!manifest;

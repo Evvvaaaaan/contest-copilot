@@ -153,6 +153,8 @@ Keep competition-specific state, source materials, and evidence in a separate pr
 
 The simulation engine does not call a model itself. The host supplies an actor's decision, then the engine checks and applies it. `try` is a simulated trial, not a real product test. Actor histories and configuration differences should be inspected before comparing runs.
 
+Open **영향 시뮬레이션 → 참여자 피드백·대화 보기** to inspect saved actions and reasons, messages with sender/recipient, and decision changes. Filter by candidate/run, participant, round, or conversations only. The viewer reads existing `run.json` files; it never invents missing dialogue. Original records can be downloaded, and running experiments can be refreshed without restarting the model.
+
 The browser retains interrupted simulation logs, but does not automatically restart a failed or stopped simulation. Inspect its saved state before deciding whether to run a new experiment. The development/review workflow has its own explicit resume controls and retains consumed limits.
 
 Submission generation requires all current required checks to pass and a matching accepted artifact version. Claims distinguish implementation, measurement, simulation, and plans. Official instructions map to recorded passing conditions; missing mappings prevent ready status. Only explicitly requested supported formats are produced. Size violations, unsupported formats, and unverified page-count rules remain visible blockers. A manifest marked `ready_for_local_review` is neither a visual review nor an external submission receipt.
