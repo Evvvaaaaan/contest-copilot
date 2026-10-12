@@ -4,7 +4,7 @@
 
 **Turn competition briefs and your ideas into evidence-backed projects.**
 
-An agent skill for deep research, idea assessment, and iterative development with recorded verification.
+A reusable set of AI instructions and a Python tool for researching competitions, evaluating ideas, and tracking development checks.
 
 [![Checks](https://github.com/Evvvaaaaan/contest-copilot/actions/workflows/checks.yml/badge.svg)](https://github.com/Evvvaaaaan/contest-copilot/actions/workflows/checks.yml)
 ![Status: Early development](https://img.shields.io/badge/status-early_development-orange)
@@ -19,9 +19,9 @@ An agent skill for deep research, idea assessment, and iterative development wit
 
 Competition preparation involves more than generating an idea. You need to understand the judging criteria, investigate previous winners, preserve your own perspective, build something feasible, and support the final claims with evidence.
 
-Contest Copilot gives an AI agent a reusable procedure for that work. Agree on the purpose, acceptance conditions, and execution limits first. Let the agent iterate within those boundaries, then review the result when the required conditions are met.
+Contest Copilot gives an AI assistant a structured procedure for that work. First, agree on the project goal, the checks needed to accept the result, and how long the assistant may keep working. The assistant then develops and reviews the work within those limits and presents the result when the required checks pass.
 
-**This is an early skill and a working local state helper. It is not yet a complete autonomous competition platform.** The stakeholder simulator, progress dashboard, and submission generators are not implemented.
+**This project currently includes written AI instructions and a working Python tool for saving progress and verification results.** The participant simulation engine, progress dashboard, and submission document generators have not been built yet.
 
 ## What works today
 
@@ -31,7 +31,7 @@ Contest Copilot gives an AI agent a reusable procedure for that work. Agree on t
 | Evidence-based idea assessment | Agent instructions written |
 | Adaptive stakeholder simulation | Procedure written; execution engine not implemented |
 | Development and separate review | Workflow written; depends on host tools |
-| Acceptance contracts and review iterations | Working Python CLI |
+| Agreed project requirements and review rounds | Working Python command-line tool |
 | Verdicts, evidence hashes, and change detection | Working Python CLI |
 | Checkpoints and decision history | Working Python CLI |
 | Live progress dashboard | Planned |
@@ -44,7 +44,7 @@ The state helper does not call an LLM API. Your existing agent supplies reasonin
 
 1. **Research the competition.** Read the announcement, amendments, eligibility rules, judging criteria, previous winners, and domestic and international evidence. Follow primary sources and record gaps and contradictions.
 2. **Understand your idea.** Hear your problem framing and experience before proposing concrete solutions. Preserve your intended outcome while considering better ways to achieve it.
-3. **Agree on an execution contract.** Define mandatory conditions, methods, targets, evidence, and iteration limits. Official requirements take precedence over inferred patterns from winners.
+3. **Agree on project requirements and working limits.** Define the required results, checks, targets, evidence, and maximum review rounds. Follow the official competition requirements before drawing conclusions from previous winners.
 4. **Design stakeholder experiments.** Compare shortlisted ideas through relevant usage, adoption, and information-exchange scenarios. The procedure is available; an executable simulator is still on the roadmap.
 5. **Iterate through planning, development, and review.** Build the smallest useful core flow. Review actual evidence, address failures, and repeat within the agreed limits. Make a running frontend available for feedback when the host and project support it.
 6. **Report and collect feedback.** Report after required conditions pass, or report incomplete status when blocked or limited. Incorporate feedback without silently changing the user's purpose.
@@ -72,7 +72,7 @@ Begin with research. Preserve my ideas and record evidence.
 Agree on acceptance criteria and execution limits before development.
 ```
 
-Host applications have different discovery paths and capabilities. Loading the repository does not automatically install or activate a skill in every AI application.
+Each AI application has its own installation steps and available tools. Downloading this repository does not automatically activate these instructions in every application.
 
 ### 3. Check the local helper
 
@@ -158,6 +158,6 @@ If this project is useful, a star helps others discover it. Concrete feedback an
 
 [MiroFish](https://github.com/666ghj/MiroFish) inspired the idea of examining an idea through stateful stakeholder interactions. Contest Copilot is an independent project with its own instructions and helper; it does not include the MiroFish application or require Zep. The original project's functionality is not claimed as implemented here.
 
-## License
+## Code Usage and Distribution
 
-A reuse license has not yet been selected for this initial publication.
+The project owner has not yet selected a software license for this repository. A software license specifies the conditions for using, modifying, and redistributing the code. This section records that pending decision; it does not grant additional reuse permissions.
