@@ -95,6 +95,9 @@ def report(state):
             reason = "evidence_changed_or_missing"
         verdict = "unverified" if reason else record["verdict"]
         results.append({"id": item["id"], "required": item["required"],
+                        "requirement": item["requirement"], "method": item["method"],
+                        "target": item["target"], "source": item["source"],
+                        "applicability": item["applicability"],
                         "verdict": verdict, "reason": reason,
                         "record": record})
     unmet = [item["id"] for item in results if item["required"] and item["verdict"] != "pass"]

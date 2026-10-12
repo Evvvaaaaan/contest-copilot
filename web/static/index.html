@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contest Copilot · 공모전 작업실</title>
+  <meta name="description" content="공모전 조사부터 개발과 검증까지, 나의 아이디어를 함께 발전시키는 로컬 작업실">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="Contest Copilot 홈"><span class="mark">c.</span><span>Contest Copilot<small>나의 공모전 작업실</small></span></a>
+    <button class="new-project" id="new-project"><span>＋</span> 새 프로젝트</button>
+    <div class="nav-label">프로젝트</div>
+    <nav id="project-list" aria-label="프로젝트 목록"></nav>
+    <div class="sidebar-bottom"><span class="dot" id="connection-dot"></span><span id="connection">연결 확인 중</span><button id="refresh-connection" title="연결 다시 확인" aria-label="연결 다시 확인">↻</button></div>
+    <p class="local-note">이 컴퓨터에 저장됩니다.</p>
+  </aside>
+
+  <main>
+    <header class="topbar"><div><span class="eyebrow">WORKSPACE</span><h1 id="project-title">새로운 가능성을 시작하세요</h1></div><span class="local-badge">로컬 작업실</span></header>
+    <div id="notice" role="alert" hidden></div>
+    <section class="welcome" id="welcome">
+      <div class="welcome-icon" aria-hidden="true">↗</div>
+      <p class="eyebrow">YOUR IDEA, WITH EVIDENCE</p>
+      <h2>아이디어는 당신에게서.<br>다음 단계는 함께.</h2>
+      <p class="welcome-copy">공고를 이해하고, 생각을 발전시키고,<br>실제로 확인한 결과까지 차근차근.</p>
+      <button class="primary" id="welcome-start">프로젝트 시작하기 <span>＋</span></button>
+      <div class="welcome-steps"><span>01 공고 조사</span><span>02 아이디어 기획</span><span>03 개발과 검증</span></div>
+    </section>
+
+    <div class="workspace" id="workspace" hidden>
+      <section class="conversation" aria-label="AI와 대화">
+        <div class="conversation-heading"><span>대화</span><span class="muted">생각을 나누며 진행합니다</span></div>
+        <div id="messages" class="messages" aria-live="polite" aria-relevant="additions text"></div>
+        <div class="activity" id="activity"><span class="dot"></span><span id="activity-text"></span></div>
+        <form id="message-form" class="composer">
+          <label class="sr-only" for="message">공고 링크나 의견</label>
+          <textarea id="message" rows="3" maxlength="16000" placeholder="공고 링크를 보내거나, 지금 생각하는 아이디어를 들려주세요."></textarea>
+          <div class="composer-bottom"><div><button type="button" class="attach" id="attach" title="공고·자료 첨부">＋ <span>자료 첨부</span></button><input type="file" id="file-input" hidden><span id="upload-status" class="muted"></span></div><div class="composer-actions"><button type="button" id="stop" class="quiet" hidden>중단</button><button class="send" id="send" type="submit">보내기 <span>↑</span></button></div></div>
+        </form>
+        <p class="composer-note">Enter로 전송 · Shift + Enter로 줄바꿈 · 실제 Codex 사용량이 적용됩니다.</p>
+      </section>
+      <aside class="details" aria-label="프로젝트 진행 상황">
+        <div class="detail-heading">진행 상황 <span id="run-label">대기</span></div>
+        <ol id="phases" class="phases"></ol>
+        <p id="summary" class="summary"></p>
+        <section class="detail-section"><h2>검증 기록 <span id="iteration"></span></h2><div id="checks"></div></section>
+        <section class="detail-section"><h2>다음 작업</h2><p id="next-action" class="muted"></p><a id="preview" class="preview-link" target="_blank" rel="noopener noreferrer" hidden>실행 화면 열기 ↗</a></section>
+        <section class="detail-section"><h2>프로젝트 파일 <span id="file-count"></span></h2><div id="files"></div></section>
+        <details class="location"><summary>저장 위치</summary><code id="workspace-path"></code></details>
+      </aside>
+    </div>
+  </main>
+
+  <dialog id="project-dialog">
+    <form id="project-form"><div class="dialog-heading"><h2>새 프로젝트</h2><button type="button" id="close-dialog" class="close" aria-label="닫기">×</button></div><p>공모전 이름이나 작업할 주제를 적어 주세요.</p><label for="project-name">프로젝트 이름</label><input id="project-name" maxlength="100" placeholder="예: 대학생 AI 서비스 공모전" required autocomplete="off"><button class="primary" type="submit">작업실 만들기</button></form>
+  </dialog>
+</body>
+</html>
