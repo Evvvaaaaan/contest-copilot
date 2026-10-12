@@ -59,15 +59,15 @@
   </main>
 
   <dialog id="simulation-feedback-dialog" aria-labelledby="simulation-feedback-title">
-    <div class="dialog-heading"><h2 id="simulation-feedback-title">참여자 피드백과 대화</h2><button type="button" class="close" id="close-simulation-feedback" aria-label="참여자 기록 닫기">×</button></div>
+    <div class="dialog-heading"><h2 id="simulation-feedback-title">전체 대화와 참여자 의견</h2><button type="button" class="close" id="close-simulation-feedback" aria-label="참여자 기록 닫기">×</button></div>
     <p class="feedback-disclaimer">가상 참여자가 기록한 의견과 행동 이유입니다. 실제 사람을 대상으로 한 인터뷰가 아닙니다.</p>
     <div class="feedback-filters">
       <label>설명 흐름 · 실행<select id="feedback-run"></select></label>
       <label>참여자<select id="feedback-person"></select></label>
       <label>라운드<select id="feedback-round"></select></label>
-      <label>기록 종류<select id="feedback-kind"><option value="all">모든 피드백</option><option value="messages">주고받은 대화</option></select></label>
+      <label>기록 종류<select id="feedback-kind"><option value="all">모든 대화와 의견</option><option value="messages">주고받은 대화</option></select></label>
     </div>
-    <div class="feedback-toolbar"><span id="feedback-status" role="status"></span><button type="button" class="quiet" id="refresh-feedback">기록 새로고침</button><a id="feedback-download" class="file" download hidden>원본 기록 내려받기</a></div>
+    <div class="feedback-toolbar"><span id="feedback-status" role="status"></span><button type="button" class="quiet" id="feedback-show-all">전체 기록 보기</button><button type="button" class="quiet" id="refresh-feedback">기록 새로고침</button><a id="feedback-download" class="file" download hidden>원본 기록 내려받기</a></div>
     <div id="feedback-content"></div>
   </dialog>
   <dialog id="project-dialog">

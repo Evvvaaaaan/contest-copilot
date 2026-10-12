@@ -2,6 +2,7 @@
    Run: node tests/browser_simulation_feedback.cjs
    PLAYWRIGHT_MODULE may point to an existing Playwright installation. */
 const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
 const {spawn} = require('node:child_process');
 const {once} = require('node:events');
 const readline = require('node:readline');
@@ -35,6 +36,14 @@ with tempfile.TemporaryDirectory() as temporary:
     engine.advance(run)
     config['candidate_id']='second-flow'
     empty=engine.create(config)['run_id']
+    config['candidate_id']='third-flow'
+    config['max_rounds']=1
+    third=engine.create(config)['run_id']
+    for actor in ('a','b','c','d'):
+        action={'event_id':'third-'+actor,'actor_id':actor,'type':'wait','reason':'Other flow opinion '+actor}
+        if actor=='c': action.update(type='share',target_id='a',content='Other flow message '+('full text '*200)+'END')
+        engine.apply(third,action)
+    engine.advance(third)
     http=make_server(app,0)
     print(json.dumps({'base':'http://127.0.0.1:'+str(http.server_port),'project':project['id'],'run':run,'empty':empty}),flush=True)
     try: http.serve_forever()
@@ -60,7 +69,22 @@ with tempfile.TemporaryDirectory() as temporary:
     await page.locator('.feedback-open').waitFor({state:'attached'});
     await page.locator('#simulation-section').evaluate(el=>el.open=true);
     await page.locator('.feedback-open').click();
-    await page.waitForFunction(()=>document.querySelectorAll('#feedback-run option').length===2);
+    await page.waitForFunction(()=>document.querySelectorAll('#feedback-run option').length===4);
+    assert.equal(await page.locator('#feedback-run').inputValue(),'');
+    assert.equal(await page.locator('.feedback-run-record').count(),3);
+    assert.equal(await page.locator('.feedback-event').count(),12);
+    assert.match(await page.locator('#feedback-content').innerText(),/Other flow message/);
+    assert.ok((await page.locator('.feedback-message').last().innerText()).endsWith('END'),'No truncation');
+    const allDownload=page.waitForEvent('download');await page.locator('#feedback-download').click();
+    const allFile=await allDownload;
+    assert.equal(allFile.suggestedFilename(),'simulation-records.json');
+    const originals=JSON.parse(await fs.readFile(await allFile.path(),'utf8'));
+    assert.equal(originals.runs.length,3);
+    assert.equal(originals.runs.reduce((n,run)=>n+run.events.filter(event=>event.type==='action').length,0),12);
+    await page.locator('#feedback-kind').selectOption('messages');
+    assert.equal(await page.locator('.feedback-message').count(),3,'Messages from every run');
+    await page.locator('#feedback-show-all').click();
+    assert.equal(await page.locator('.feedback-event').count(),12);
     await page.locator('#feedback-run').selectOption(`simulations/${fixture.run}/run.json`);
     assert.equal(await page.locator('.feedback-event').count(),8);
     assert.match(await page.locator('#feedback-content').innerText(),/미정에서 채택/);
@@ -87,16 +111,18 @@ with tempfile.TemporaryDirectory() as temporary:
     await page.locator('#feedback-run').selectOption(`simulations/${fixture.empty}/run.json`);
     assert.match(await page.locator('#feedback-content').innerText(),/아직 기록된 참여자 행동이 없습니다/);
     await page.locator('#feedback-run').selectOption(`simulations/${fixture.run}/run.json`);
+    await page.locator('#feedback-show-all').click();
+    assert.equal(await page.locator('.feedback-event').count(),12);
     await page.setViewportSize({width:390,height:844});
     assert.equal(await page.locator('#simulation-feedback-dialog').evaluate(el=>el.scrollWidth>el.clientWidth),false);
     // A read error must not display an earlier run's feedback as if it were current.
     await page.route('**/file?*',route=>route.fulfill({status:404,json:{error:'Missing test snapshot'}}));
     await page.locator('#refresh-feedback').click();
     await page.waitForFunction(()=>!document.querySelector('#refresh-feedback').disabled);
-    assert.match(await page.locator('#feedback-status').innerText(),/2개 기록을 읽지 못했습니다/);
+    assert.match(await page.locator('#feedback-status').innerText(),/3개 기록을 읽지 못했습니다/);
     assert.equal(await page.locator('.feedback-event').count(),0);
     assert.deepEqual(errors,[]);
-    console.log('PASS: run/person/round filters, sent/received dialogue, original reasons, decision changes, refresh, download, missing records, HTML safety, mobile layout.');
+    console.log('PASS: all-run default, complete messages, combined originals, reset filters, run/person/round filters, sent/received dialogue, original reasons, decision changes, refresh, download, missing records, HTML safety, mobile layout.');
   } finally {
     if(browser)await browser.close();startup.close();
     const exited=once(server,'exit');server.kill('SIGINT');await exited;

@@ -153,7 +153,7 @@ Keep competition-specific state, source materials, and evidence in a separate pr
 
 The simulation engine does not call a model itself. The host supplies an actor's decision, then the engine checks and applies it. `try` is a simulated trial, not a real product test. Actor histories and configuration differences should be inspected before comparing runs.
 
-Open **영향 시뮬레이션 → 참여자 피드백·대화 보기** to inspect saved actions and reasons, messages with sender/recipient, and decision changes. Filter by candidate/run, participant, round, or conversations only. The viewer reads existing `run.json` files; it never invents missing dialogue. Original records can be downloaded, and running experiments can be refreshed without restarting the model.
+Open **영향 시뮬레이션 → 전체 대화·의견 보기** to inspect saved actions and reasons, messages with sender/recipient, and decision changes. All candidates/runs are shown together by default with full message text and action reasons. Optionally filter by candidate/run, participant, round, or conversations only; **전체 기록 보기** resets those filters. Download either one original run or all loaded run snapshots as JSON. The viewer reads existing `run.json` files; it never invents missing dialogue. Original records can be downloaded, and running experiments can be refreshed without restarting the model.
 
 The browser retains interrupted simulation logs, but does not automatically restart a failed or stopped simulation. Inspect its saved state before deciding whether to run a new experiment. The development/review workflow has its own explicit resume controls and retains consumed limits.
 
