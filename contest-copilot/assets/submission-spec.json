@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "required": ["project", "title", "official_instructions", "accepted", "sections", "formats"],
+  "supported_formats": ["md", "html", "zip"],
+  "example": {
+    "project": "Project name matching progress.json",
+    "title": "Submission report",
+    "official_instructions": [{"id": "submission-format", "text": "Replace with the actual official submission instructions", "source_id": "official-notice", "condition_ids": ["submission-format-check"]}],
+    "accepted": {"artifact_version": "v1", "contract_version": 1, "iteration": 1, "decision_reference": "Actual acceptance message reference"},
+    "sections": [{"title": "Results", "claims": [{"kind": "measured", "text": "Describe the actual observed result", "source_ids": ["official-notice"], "evidence": [{"path": "evidence/result.txt", "sha256": "Replace with the current evidence SHA-256"}]}]}],
+    "formats": [{"format": "md", "filename": "report.md"}, {"format": "html", "filename": "report.html"}, {"format": "zip", "filename": "source.zip", "max_bytes": 10000000}],
+    "source_files": ["src/main.py"],
+    "user_decision_ids": ["decision-1"]
+  }
+}

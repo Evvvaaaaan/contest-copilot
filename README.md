@@ -4,7 +4,7 @@
 
 **Turn competition briefs and your ideas into evidence-backed projects.**
 
-A local web workspace, reusable AI instructions, and a Python tool for researching competitions, evaluating ideas, and tracking development checks.
+A local web workspace, reusable AI instructions, and Python tools for researching competitions, developing ideas, running stakeholder experiments, and preparing evidence-linked submissions.
 
 [![Checks](https://github.com/Evvvaaaaan/contest-copilot/actions/workflows/checks.yml/badge.svg)](https://github.com/Evvvaaaaan/contest-copilot/actions/workflows/checks.yml)
 ![Status: Early development](https://img.shields.io/badge/status-early_development-orange)
@@ -21,22 +21,21 @@ Competition preparation involves more than generating an idea. You need to under
 
 Contest Copilot gives an AI assistant a structured procedure for that work. First, agree on the project goal, the checks needed to accept the result, and how long the assistant may keep working. The assistant then develops and reviews the work within those limits and presents the result when the required checks pass.
 
-**This project includes a local browser app connected to Codex, written AI instructions, and a Python tool for saving progress and verification results.** The participant simulation engine and submission document generators have not been built yet.
+**This project combines a local browser app connected to Codex with explicit requirements, separate development and review, research records, synthetic stakeholder experiments, and submission packaging.** The core Python tools use the standard library. The application coordinates model calls through your installed Codex CLI.
 
 ## What works today
 
 | Capability | Current status |
 |---|---|
-| Competition research and source checking | Agent instructions written |
-| Evidence-based idea assessment | Agent instructions written |
-| Adaptive stakeholder simulation | Procedure written; execution engine not implemented |
-| Development and separate review | Workflow written; depends on host tools |
-| Agreed project requirements and review rounds | Working Python command-line tool |
-| Verdicts, evidence hashes, and change detection | Working Python CLI |
-| Checkpoints and decision history | Working Python CLI |
-| Local chat, attachments, files, and progress view | Working local web app connected to Codex |
-| Report and presentation generation templates | Planned |
-| End-to-end competition case study | Not yet validated |
+| Competition research | Search procedure plus versioned sources, claims, and document extraction records |
+| User intent and idea assessment | Original/revised decisions with author and conversation references |
+| Stakeholder experiments | Persistent actors, resources, limited observations, actions, rounds, stop, and summaries |
+| Development and review | Controller protocol for fresh development and read-only review contexts with explicit limits |
+| Acceptance checks | Per-condition verdicts, artifact/evidence hashes, and stale-result detection |
+| Browser workspace | Codex conversation, uploads, progress, feedback, and downloadable files |
+| Submission files | Markdown, HTML, source ZIP, and verification manifests |
+| PDF, DOCX, PPTX generation | Unsupported; required unsupported formats remain incomplete |
+| Real competition outcome | No demonstrated award result or validated real-world adoption forecast |
 
 The state helper does not call an LLM API. The local web app invokes your installed Codex CLI and can use its existing ChatGPT login without an additional API key. Your assistant supplies reasoning and executes checks; the helper stores results and checks whether recorded files have changed. AI requests still go to the configured provider: local storage does not mean offline inference. Subscription, tool availability, and usage limits still apply.
 
@@ -45,12 +44,14 @@ The state helper does not call an LLM API. The local web app invokes your instal
 1. **Research the competition.** Read the announcement, amendments, eligibility rules, judging criteria, previous winners, and domestic and international evidence. Follow primary sources and record gaps and contradictions.
 2. **Understand your idea.** Hear your problem framing and experience before proposing concrete solutions. Preserve your intended outcome while considering better ways to achieve it.
 3. **Agree on project requirements and working limits.** Define the required results, checks, targets, evidence, and maximum review rounds. Follow the official competition requirements before drawing conclusions from previous winners.
-4. **Design stakeholder experiments.** Compare shortlisted ideas through relevant usage, adoption, and information-exchange scenarios. The procedure is available; an executable simulator is still on the roadmap.
+4. **Run bounded stakeholder experiments.** Review the configuration, then compare shortlisted ideas through relevant usage, adoption, and information-exchange scenarios. Actors receive limited observations; local code validates actions and saves each state change.
 5. **Iterate through planning, development, and review.** Build the smallest useful core flow. Review actual evidence, address failures, and repeat within the agreed limits. Make a running frontend available for feedback when the host and project support it.
 6. **Report and collect feedback.** Report after required conditions pass, or report incomplete status when blocked or limited. Incorporate feedback without silently changing the user's purpose.
 7. **Prepare the required submission.** Match claims and deliverables to the accepted implementation, measured results, and official format. External submission requires authorization.
 
 Simulated reactions are not real user research. A successful CLI invocation is not a passing product test. An LLM's self-assigned score is not evidence that a requirement has been met.
+
+Research prioritizes official rules and published judging criteria, then past winners and judging comments, followed by domestic and international supporting evidence. The assistant records queries, inspected sources, coverage gaps, contradictions, and the reason it stopped searching. It does not promise to find every web page. Source records preserve what was supplied; they do not independently prove a claim true.
 
 ## Get started
 
@@ -67,7 +68,7 @@ Install Python 3.9+ and the [Codex CLI](https://developers.openai.com/codex/cli/
 
 ```sh
 codex login
-python3 web/server.py
+python3 web/server.py --port 8765
 ```
 
 The app opens `http://127.0.0.1:8765` in your browser. Create a project, attach a competition brief or paste its URL, and send your message. Conversations, files, and progress are saved locally. Subsequent messages resume the project's Codex thread.
@@ -76,13 +77,16 @@ The app opens `http://127.0.0.1:8765` in your browser. Create a project, attach 
 - Stop a running task, or use **Stop and send** to interrupt it and send revised instructions. This starts a new turn in the same conversation; it does not inject text into an in-flight turn.
 - Upload source documents up to 10 MB each. Extraction depends on tools available to Codex; uploading a PDF does not guarantee that a PDF reader is installed.
 - Initial progress comes from `ui-state.json`. After the user agrees to acceptance conditions, the app displays actual `manage_state.py` records. It does not fabricate a completion percentage.
+- The assistant proposes `workflow-proposal.json`; confirm the initial conditions and limits once before automatic development/review. The host owns acceptance state, so a chat reply cannot approve its own result.
+- After a workflow has been approved, sending feedback marks a pending revision and blocks finalization. Use the resume control to apply it under the same conditions and remaining limits. Changed criteria or a larger budget require a revised proposal.
+- Review `simulation-plan.json` before running a synthetic experiment. Accept the reviewed product before building the proposed `submission-spec.json` package.
 - The interface is Korean. Skill instructions and source code are English.
 
 The first web connector supports **Codex CLI**. Other AI tools can use the skill instructions, but are not yet connected to the web chat.
 
 Data is stored in `~/.local/share/contest-copilot/` by default. Use `--data-dir PATH` for a separate workspace and `--port 8766` if the default port is busy. Use `--no-open` to start without opening a browser. Test against a separate data directory and port; do not put sample conversations in a user's working projects.
 
-The server listens only on the local loopback interface. Codex runs with a workspace-write sandbox and cannot request interactive command approvals through this version of the app. Blocked commands must be reported; the app does not bypass the sandbox. Each turn has a 30-minute default limit, configurable with `--turn-timeout SECONDS`. Project-level acceptance and iteration limits remain separate.
+The server listens only on the local loopback interface. Development uses a workspace-write sandbox and separate review uses a read-only sandbox. The app cannot request interactive command approvals; blocked commands must be reported. Each turn has a 30-minute default limit, configurable with `--turn-timeout SECONDS`. The approved workflow also has project-level turn, elapsed-time, review-round, and stagnation limits. Interrupted work must be resumed from its recorded state, not treated as finished.
 
 ### 3. Use the skill in another compatible agent
 
@@ -103,12 +107,19 @@ With Python 3.9+ on macOS or Linux:
 
 ```sh
 python3 contest-copilot/scripts/manage_state.py --help
+python3 contest-copilot/scripts/project_records.py --help
+python3 contest-copilot/scripts/simulate.py --help
+python3 contest-copilot/scripts/build_submission.py --help
 python3 -m unittest discover -s tests -v
 ```
 
-No third-party Python packages are required for the web server or these commands. Tests use temporary project files and exercise the state CLI and local HTTP server. Automated transport tests use an explicitly labeled Codex protocol test double; they do not prove model behavior. The browser chat, real Codex response, thread resume, upload, and download were also checked locally with a real signed-in Codex session.
+No third-party Python packages are required for the web server or core commands. PDF extraction optionally uses `pypdf` or `pdftotext`; missing backends and unreadable pages are recorded. There is no built-in OCR. Text extraction does not verify diagrams, images, or complete rendered pagination.
+
+Tests use temporary workspaces. Protocol fixtures do not prove model behavior, research depth, prediction accuracy, or competition quality. Run the tests in your environment and inspect actual output; this README does not assert that every host, model, or end-to-end competition process has been validated.
 
 For the contract schema and command examples, read [Local State Tool](contest-copilot/references/validation-loop.md#9-local-state-tool).
+
+For proposal schemas, ownership rules, records, simulation configuration, and submission formats, read [Local Workflow Protocol](contest-copilot/references/local-workflow.md).
 
 ## State management
 
@@ -124,11 +135,33 @@ For the contract schema and command examples, read [Local State Tool](contest-co
 
 The helper requires evidence files for a pass, rejects waivers of required conditions, and invalidates verdicts when registered artifacts or evidence files change. A new contract invalidates earlier acceptance without erasing history.
 
+The web reviewer additionally links each condition to exact executed commands. Passing conditions require matching successful execution events; unrelated successful commands cannot make a listed failed check pass. This checks execution provenance, not whether the test design or reviewer judgment is substantively correct. Negative tests should use an assertion wrapper that exits zero when the expected failure occurs.
+
 `ready_for_user_review` means all required conditions have recorded, current passes. It does not authenticate those judgments or mean the user has accepted the result. `limit_reached` means no new review iteration can start under the current allowance; the current review can still finish.
 
-Only registered files are fingerprinted. Reviewers must separately check unlisted files, external services, runtime conditions, and whether the evidence actually proves the target. Time, retry, and stagnation limits remain the coordinating agent's responsibility.
+Only registered files are fingerprinted. Reviewers must separately check unlisted files, external services, runtime conditions, and whether the evidence actually proves the target. The standalone helper enforces review-round limits; the web controller coordinates its additional time, turn, and stagnation limits. In the web workflow, chat and development must not use this CLI to grant their own passes.
 
 Keep competition-specific state, source materials, and evidence in a separate project directory. They are not part of this reusable skill.
+
+## Evidence, simulation, and submission tools
+
+| Component | Stored state or output | Responsibility |
+|---|---|---|
+| `project_records.py` | `records.json` | Versioned sources, cited claims, user/assistant decisions, document extraction coverage |
+| `simulate.py` | `simulations/<run-id>/run.json` | Actor observations, allowed actions, resource changes, event history, bounded rounds |
+| `build_submission.py` | `submission/` | Requested MD/HTML/ZIP files and an input/output hash manifest |
+
+The simulation engine does not call a model itself. The host supplies an actor's decision, then the engine checks and applies it. `try` is a simulated trial, not a real product test. Actor histories and configuration differences should be inspected before comparing runs.
+
+The browser retains interrupted simulation logs, but does not automatically restart a failed or stopped simulation. Inspect its saved state before deciding whether to run a new experiment. The development/review workflow has its own explicit resume controls and retains consumed limits.
+
+Submission generation requires all current required checks to pass and a matching accepted artifact version. Claims distinguish implementation, measurement, simulation, and plans. Official instructions map to recorded passing conditions; missing mappings prevent ready status. Only explicitly requested supported formats are produced. Size violations, unsupported formats, and unverified page-count rules remain visible blockers. A manifest marked `ready_for_local_review` is neither a visual review nor an external submission receipt.
+
+## Retrospective example
+
+The [NASA Farm Navigators example](examples/nasa-farm-navigators/README.md) contains an official-source research record, a small playable learning prototype, acceptance conditions, a simulation plan, and tests. Its [integration record](examples/nasa-farm-navigators/validation.md) describes real Codex development/review and browser-driven simulation/report generation. Four internal prototype conditions passed; the output package correctly remained **not ready** for official submission because NASA data integration and official demo requirements were not satisfied.
+
+The scenario was authored by AI for testing, not attributed to a real user's idea. Synthetic reactions are not real adoption estimates, and the closed 2025 challenge is not presented as a current opportunity.
 
 ## Compatibility and language
 
@@ -139,7 +172,7 @@ Keep competition-specific state, source materials, and evidence in a separate pr
 - **State helper:** Python 3.9+, macOS/Linux. Native Windows is not currently supported because the helper uses POSIX file locking.
 - **Local web app:** The same Python requirement, a modern browser, and an installed, authenticated Codex CLI. Native Windows is not currently supported because process cancellation uses POSIX process groups.
 - **Languages:** Instructions and code are English. User-facing communication defaults to Korean; follow explicit user language requests and official submission requirements.
-- **Validation scope:** Local CLI tests are available. Broad cross-host and cross-model validation is pending.
+- **Validation scope:** Automated component and subprocess integration tests plus a real Codex/browser retrospective example are available. Broad cross-host and cross-model validation is pending.
 
 ## Repository structure
 
@@ -153,30 +186,37 @@ contest-copilot/
 │   │   ├── research.md
 │   │   ├── idea-evaluation.md
 │   │   ├── simulation.md
-│   │   └── validation-loop.md
-│   └── scripts/
-│       └── manage_state.py
+│   │   ├── validation-loop.md
+│   │   └── local-workflow.md
+│   ├── scripts/
+│   │   ├── manage_state.py
+│   │   ├── project_records.py
+│   │   ├── simulate.py
+│   │   └── build_submission.py
+│   └── assets/
+│       ├── report.html
+│       └── submission-spec.json
 ├── web/
 │   ├── server.py
+│   ├── workflow.py
 │   └── static/
 │       ├── index.html
 │       ├── style.css
 │       └── app.js
-└── tests/
-    ├── test_manage_state.py
-    ├── test_web_app.py
-    └── fixtures/fake_codex.py
+├── examples/nasa-farm-navigators/
+└── tests/                  # State, records, simulation, submission, and web checks
 ```
 
 ## Roadmap
 
 - [x] Define the research, idea assessment, simulation, and validation procedures.
 - [x] Implement and test acceptance state, evidence freshness, iteration limits, and checkpoints.
-- [ ] Implement participant state, allowed actions, environment updates, and simulation rounds.
+- [x] Implement participant state, allowed actions, environment updates, and simulation rounds.
 - [x] Provide a local chat, saved progress view, attachments, and stop-and-send feedback with Codex.
 - [ ] Add web chat connectors for other agent applications.
-- [ ] Add deliverable templates matching competition requirements.
-- [ ] Publish a reproducible end-to-end example with actual execution evidence.
+- [x] Add evidence-linked Markdown/HTML reports and source ZIP packaging.
+- [ ] Add native PDF, DOCX, and PPTX generation with rendered-format checks.
+- [x] Publish a reproducible end-to-end example with actual execution evidence.
 - [ ] Validate additional agent hosts and improve platform compatibility.
 
 Roadmap items describe intended work, not available functionality.
@@ -189,7 +229,7 @@ If this project is useful, a star helps others discover it. Concrete feedback an
 
 ## Inspiration
 
-[MiroFish](https://github.com/666ghj/MiroFish) inspired the idea of examining an idea through stateful stakeholder interactions. Contest Copilot is an independent project with its own instructions and helper; it does not include the MiroFish application or require Zep. The original project's functionality is not claimed as implemented here.
+[MiroFish](https://github.com/666ghj/MiroFish) inspired the idea of examining an idea through stateful stakeholder interactions. Contest Copilot is an independent project with its own instructions and local tools; it does not include the MiroFish application or require Zep. Its bounded actor/action engine is not a claim to reproduce all MiroFish functionality or predictive performance.
 
 ## Code Usage and Distribution
 

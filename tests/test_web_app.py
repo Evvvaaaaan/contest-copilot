@@ -9,7 +9,9 @@ import sys
 import tempfile
 import threading
 import time
+from types import SimpleNamespace
 import unittest
+from unittest import mock
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
@@ -38,8 +40,8 @@ class WebFlowTests(unittest.TestCase):
     def tearDown(self):
         for project_id in list(self.app.jobs):
             self.app.stop(project_id)
-        deadline = time.time() + 6
-        while self.app.jobs and time.time() < deadline:
+        deadline = time.monotonic() + 6
+        while self.app.jobs and time.monotonic() < deadline:
             time.sleep(0.05)
         # Ensure a failed cancellation test never leaves a fixture process behind.
         for job in self.app.jobs.values():
@@ -66,8 +68,8 @@ class WebFlowTests(unittest.TestCase):
             return None
 
     def wait(self, status="idle", seconds=6):
-        deadline = time.time() + seconds
-        while time.time() < deadline:
+        deadline = time.monotonic() + seconds
+        while time.monotonic() < deadline:
             result = self.request(f"/api/projects/{self.project}")
             if result["status"] == status and self.project not in self.app.jobs:
                 return result
@@ -106,6 +108,20 @@ class WebFlowTests(unittest.TestCase):
         self.request(f"/api/projects/{self.project}/stop", {})
         result = self.wait("interrupted", seconds=5)
         self.assertEqual(len(result["messages"]), 1)
+
+    def test_stop_wait_survives_forward_wall_clock_jump(self):
+        self.request(f"/api/projects/{self.project}/message", {"text": "TEST_WAIT"})
+        time.sleep(0.3)
+        self.request(f"/api/projects/{self.project}/stop", {})
+        wall = time.time()
+        calls = iter((wall, wall + 3600))
+        jumping_clock = SimpleNamespace(time=lambda: next(calls, wall + 3600),
+                                        monotonic=time.monotonic, sleep=time.sleep)
+        # Patch this test module only, preserving real server/process clocks.
+        with mock.patch.dict(globals(), time=jumping_clock):
+            result = self.wait("interrupted", seconds=5)
+        self.assertEqual(result["status"], "interrupted")
+        self.assertNotIn(self.project, self.app.jobs)
 
     def test_upload_download_and_no_path_escape(self):
         upload = self.request(f"/api/projects/{self.project}/upload", {

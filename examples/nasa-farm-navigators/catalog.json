@@ -1,0 +1,44 @@
+[
+  {
+    "id": "agriculture-water",
+    "title": "Agriculture and Water Management Pathfinder",
+    "url": "https://www.earthdata.nasa.gov/learn/pathfinders/agricultural-and-water-resources-data-pathfinder",
+    "summary": "NASA discovery guide for irrigation, vegetation health, soil moisture and drought.",
+    "tags": [
+      "irrigation",
+      "vegetation",
+      "soil moisture",
+      "drought"
+    ],
+    "source_id": "official-challenge",
+    "locator": "Resources: NASA Data & Resources",
+    "inspection_scope": "Resource listing on the challenge page; linked product not inspected."
+  },
+  {
+    "id": "floods",
+    "title": "Floods Data Pathfinder",
+    "url": "https://www.earthdata.nasa.gov/learn/pathfinders/disasters/floods-data-pathfinder",
+    "summary": "NASA resource guide for flood response and mitigation.",
+    "tags": [
+      "floods",
+      "water"
+    ],
+    "source_id": "official-challenge",
+    "locator": "Resources: NASA Data & Resources",
+    "inspection_scope": "Resource listing on the challenge page; linked product not inspected."
+  },
+  {
+    "id": "earthdata-search",
+    "title": "NASA Earthdata Search",
+    "url": "https://search.earthdata.nasa.gov/search",
+    "summary": "Search and discovery entry point for Earth science data.",
+    "tags": [
+      "NASA",
+      "discovery",
+      "search"
+    ],
+    "source_id": "official-challenge",
+    "locator": "Resources: NASA Data & Resources",
+    "inspection_scope": "Resource listing on the challenge page; linked product not inspected."
+  }
+]

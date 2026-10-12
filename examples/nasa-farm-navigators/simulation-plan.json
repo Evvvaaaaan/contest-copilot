@@ -1,0 +1,67 @@
+{
+  "candidate_id": "farm-learning-sketch",
+  "candidate_version": "example-v1",
+  "question": "Which provenance and usability concerns arise when planning a future educational farming game from a small offline resource catalog?",
+  "max_rounds": 2,
+  "baseline": {
+    "mode": "synthetic_retrospective_scenario",
+    "prototype": "Two-turn learning sketch plus resource catalog; uses synthetic weather, not NASA observations.",
+    "data": "Curated metadata only.",
+    "evidence": "research.json",
+    "caution": "Two fictional participants are not representative of farmers or educators."
+  },
+  "participants": [
+    {
+      "id": "educator",
+      "role": "Fictional agriculture educator",
+      "goals": [
+        "Teach dataset limitations clearly."
+      ],
+      "constraints": [
+        "Requires measured learning outcomes before classroom adoption."
+      ],
+      "knowledge": [
+        "The official challenge asks for an educational game."
+      ],
+      "resources": {
+        "minutes": 10
+      },
+      "basis": [
+        "AI-authored persona inspired by the official Objectives; no interview data."
+      ]
+    },
+    {
+      "id": "learner",
+      "role": "Fictional beginner learner",
+      "goals": [
+        "Find an understandable starting point for irrigation data."
+      ],
+      "constraints": [
+        "Has no remote sensing training."
+      ],
+      "knowledge": [
+        "The catalog offers references rather than farm recommendations."
+      ],
+      "resources": {
+        "minutes": 10
+      },
+      "basis": [
+        "AI-authored persona inspired by the challenge accessibility objective; not a measured population."
+      ]
+    }
+  ],
+  "action_costs": {
+    "try": {
+      "minutes": 2
+    },
+    "ask": {
+      "minutes": 1
+    },
+    "share": {
+      "minutes": 1
+    },
+    "adopt": {
+      "minutes": 1
+    }
+  }
+}

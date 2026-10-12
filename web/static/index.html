@@ -46,7 +46,11 @@
         <div class="detail-heading">진행 상황 <span id="run-label">대기</span></div>
         <ol id="phases" class="phases"></ol>
         <p id="summary" class="summary"></p>
+        <section class="detail-section" id="workflow-section" hidden><h2>자동 진행 <span id="workflow-role"></span></h2><p id="workflow-status" class="status-note" aria-live="polite"></p><details id="contract-details"><summary>목표와 실행 한도</summary><div id="contract-content" class="record-content"></div></details><div class="detail-actions"><button type="button" class="quiet workflow-action" id="approve-workflow" hidden>조건 승인 후 자동 진행</button><button type="button" class="quiet workflow-action" id="resume-workflow" hidden>자동 진행 이어가기</button></div></section>
         <section class="detail-section"><h2>검증 기록 <span id="iteration"></span></h2><div id="checks"></div></section>
+        <details class="detail-section record-section" id="records-section" hidden><summary>조사와 결정 기록 <span id="record-count"></span></summary><div id="records" class="record-content"></div></details>
+        <details class="detail-section record-section" id="simulation-section" hidden><summary>영향 시뮬레이션 <span id="simulation-count"></span></summary><p class="status-note">가상 참여자의 반응입니다. 실제 사용자 조사나 제품 성능을 뜻하지 않습니다.</p><div id="simulation-plan" class="record-content"></div><button type="button" class="quiet workflow-action" id="start-simulation" hidden>계획 승인 후 실험 시작</button><div id="simulations" class="record-content"></div></details>
+        <details class="detail-section record-section" id="submission-section" hidden><summary>제출물 준비</summary><div id="submission" class="record-content"></div><button type="button" class="quiet workflow-action" id="finalize-project" hidden>결과 수용 후 제출물 생성</button><p class="status-note">파일을 준비합니다. 외부 제출은 별도입니다.</p></details>
         <section class="detail-section"><h2>다음 작업</h2><p id="next-action" class="muted"></p><a id="preview" class="preview-link" target="_blank" rel="noopener noreferrer" hidden>실행 화면 열기 ↗</a></section>
         <section class="detail-section"><h2>프로젝트 파일 <span id="file-count"></span></h2><div id="files"></div></section>
         <details class="location"><summary>저장 위치</summary><code id="workspace-path"></code></details>

@@ -1,0 +1,43 @@
+{
+  "project": "NASA Farm Navigators retrospective learning prototype",
+  "intent": "Demonstrate research, a bounded playable prototype and executable verification; do not imply full challenge eligibility.",
+  "max_iterations": 3,
+  "conditions": [
+    {
+      "id": "catalog-search",
+      "source": "Internal illustrative prototype criterion informed by official-challenge; not an official eligibility waiver.",
+      "requirement": "Relevant query returns a linked resource and unmatched query returns an empty list.",
+      "method": "python3 -m unittest discover -s . -p \"test_*.py\" -v",
+      "target": "All catalog tests pass, exit code 0.",
+      "applicability": "This offline catalog prototype version only.",
+      "required": true
+    },
+    {
+      "id": "provenance",
+      "source": "Internal illustrative prototype criterion informed by official-challenge; not an official eligibility waiver.",
+      "requirement": "All returned entries retain known source IDs, official resource links and scoped inspection labels.",
+      "method": "Inspect catalog.json and research.json; run test_vegetation_returns_traceable_metadata.",
+      "target": "Every catalog row links to official-challenge and has a locator.",
+      "applicability": "This offline catalog prototype version only.",
+      "required": true
+    },
+    {
+      "id": "scope-disclosure",
+      "source": "Internal illustrative prototype criterion informed by official-challenge; not an official eligibility waiver.",
+      "requirement": "Output and documentation identify offline metadata and do not claim an official-ready game or real agricultural measurements.",
+      "method": "Run python3 catalog.py irrigation and inspect README.md and research.json.",
+      "target": "Explicit limitation in CLI output and official_submission_ready=false.",
+      "applicability": "This offline catalog prototype version only.",
+      "required": true
+    },
+    {
+      "id": "playable-loop",
+      "source": "Internal illustrative prototype criterion, informed by official-challenge Objectives.",
+      "requirement": "Two choices across two turns update crop-dependent water/budget resources and return an explained final state.",
+      "method": "python3 -m unittest discover -s . -p test_game.py -v; python3 farm_game.py --actions irrigate conserve",
+      "target": "All game tests pass; final status complete with exactly two history records and synthetic-data disclosure.",
+      "applicability": "This synthetic teaching prototype only; no real-world crop accuracy asserted.",
+      "required": true
+    }
+  ]
+}

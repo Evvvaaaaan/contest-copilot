@@ -1,0 +1,140 @@
+{
+  "scenario_author": "assistant",
+  "scenario_type": "retrospective_illustrative_example",
+  "retrieved_at": "2026-10-12",
+  "official_submission_ready": false,
+  "official_scope": "Develop an educational game using NASA open datasets to teach sustainable agricultural practices.",
+  "prototype_scope": "A deterministic two-turn CLI learning sketch with crop choice, water/budget game units and resource catalog; synthetic weather only, not a validated agricultural model.",
+  "sources": [
+    {
+      "id": "official-challenge",
+      "title": "NASA Farm Navigators challenge",
+      "url": "https://www.spaceappschallenge.org/2025/challenges/nasa-farm-navigators-using-nasa-data-exploration-in-agriculture/",
+      "status": "inspected",
+      "locator": "Summary; Objectives; Resources: NASA Data & Resources",
+      "accessed_at": "2026-10-12",
+      "excerpt": "This challenge is now closed.",
+      "evidence": "HTML retrieved using curl; inspected decoded Next.js page content, including Objectives and Resources.",
+      "retrieved_sha256": "1a42974d9be218ee3f62e76822bb7522360a5f579dd73050fc44c400a7fee12c"
+    },
+    {
+      "id": "official-awards",
+      "title": "2025 Space Apps awards",
+      "url": "https://www.spaceappschallenge.org/2025/awards/",
+      "status": "inspected",
+      "locator": "Awards categories; Global Nominees; Global Finalists; Global Winners",
+      "accessed_at": "2026-10-12",
+      "excerpt": "10 Global Awards",
+      "evidence": "Official HTML inspected; award descriptions do not establish a numerical scoring weight.",
+      "retrieved_sha256": "e6751092cb572a48358beaaa32c931a4a8587fafe0082477ded5dfc023df23e3"
+    },
+    {
+      "id": "official-winner-announcement",
+      "title": "NASA Announces 2025 International Space Apps Challenge Global Winners",
+      "url": "https://www.nasa.gov/learning-resources/stem-engagement-at-nasa/nasa-announces-2025-international-space-apps-challenge-global-winners/",
+      "status": "inspected",
+      "locator": "Art & Technology Award: Zumorroda-X",
+      "published_at": "2025-12-18",
+      "accessed_at": "2026-10-12",
+      "excerpt": "Art & Technology Award: Zumorroda-X",
+      "evidence": "Official NASA article inspected with browser search result full text."
+    },
+    {
+      "id": "official-judging",
+      "title": "Final Space Apps 2025 Judging Guidelines",
+      "url": "https://spaceapps-v2-staging.s3.amazonaws.com/media/documents/Final_Space_Apps_2025_Judging_Guidelines_for_web.pdf",
+      "status": "inspected",
+      "locator": "PDF page 1: minimum requirements and holistic rating; pages 2-3: criteria; page 4: awards",
+      "accessed_at": "2026-10-12",
+      "excerpt": "Rate each project holistically from 1 (poor) to 5 (exemplary).",
+      "evidence": "Official guideline PDF read using browser extraction and pdftotext; 4 pages.",
+      "retrieved_sha256": "7dc10203f27a7ffd81126c3a100090cb4a954a53f39e1ec10bce053de260dd99"
+    }
+  ],
+  "claims": [
+    {
+      "id": "challenge-fit",
+      "kind": "fact",
+      "text": "The requested solution is an educational game using NASA open data; a catalog alone does not meet that full scope.",
+      "source_ids": [
+        "official-challenge"
+      ],
+      "uncertainty": "Interpretation of scope is grounded in the explicit Summary and Objectives; no eligibility decision is asserted."
+    },
+    {
+      "id": "resource-limitations",
+      "kind": "fact",
+      "text": "The challenge explicitly calls attention to dataset limitations and farming context.",
+      "source_ids": [
+        "official-challenge"
+      ],
+      "uncertainty": "Dataset product-specific limits remain to be researched."
+    },
+    {
+      "id": "winner",
+      "kind": "fact",
+      "text": "NASA lists Egypt-based Zumorroda-X as the 2025 Art & Technology winner for this challenge, describing farming mini games across environmental scenarios.",
+      "source_ids": [
+        "official-winner-announcement"
+      ],
+      "uncertainty": "No unpublished judge scores, causal reason for winning or independently verified game outcomes are available here."
+    },
+    {
+      "id": "design-hypothesis",
+      "kind": "interpretation",
+      "text": "A small resource catalog could help explain the provenance behind a future game, but needs to become part of playable learning scenarios.",
+      "source_ids": [
+        "official-challenge",
+        "official-winner-announcement"
+      ],
+      "uncertainty": "AI design hypothesis; not a user preference or an established learning benefit."
+    },
+    {
+      "id": "judging",
+      "kind": "fact",
+      "text": "Judging first checks minimum requirements, then uses a holistic 1-5 assessment guided by impact, creativity, validity, relevance and presentation. No numeric criterion weights are provided.",
+      "source_ids": [
+        "official-judging"
+      ],
+      "uncertainty": "This is a bounded summary, not an exhaustive eligibility audit."
+    }
+  ],
+  "decisions": [
+    {
+      "actor": "assistant",
+      "original": "Potentially position the catalog as the competition entry.",
+      "revised": "Keep the catalog as a bounded research prototype and leave official game requirements unmet.",
+      "reason": "Official challenge scope requires an educational game.",
+      "message_ref": "AI-authored example design; no user approval represented."
+    },
+    {
+      "actor": "assistant",
+      "original": "Catalog only.",
+      "revised": "Add two-turn crop/water/budget learning sketch with clearly synthetic rules.",
+      "reason": "Improve illustrative interaction while preserving unmet NASA data and scientific validation requirements.",
+      "message_ref": "AI-authored example; not attributed to the user."
+    }
+  ],
+  "research_gaps": [
+    "Full eligibility and all submission requirements are not audited.",
+    "Domestic and international competitor survey is not complete.",
+    "No original winner code, demo or participant interview has been verified.",
+    "No actual satellite observations have been downloaded; no learner outcomes measured.",
+    "No current competition recommendation: the 2025 event is closed."
+  ],
+  "official_requirements_review": {
+    "source_id": "official-judging",
+    "minimum_requirements_summary": [
+      "Primarily English; responds to selected challenge.",
+      "Demo up to 7 slides including opening/ending OR up to 30 seconds.",
+      "Accessible unrestricted links; use NASA open data/resources.",
+      "Declare AI-generated work, follow the listed branding and media disclosure rules."
+    ],
+    "prototype_unmet_or_unverified": [
+      "Only resource metadata is used; no meaningful observation-driven farming model.",
+      "No official registration, team eligibility, event-time work or submission verification.",
+      "No final official-format demo or public link accessibility audit.",
+      "No scientific validity, learning outcome or real user usability study."
+    ]
+  }
+}

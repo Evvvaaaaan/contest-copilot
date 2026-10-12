@@ -24,6 +24,8 @@ Develop the user's ideas into verifiable deliverables and submission materials u
 - Before execution, check which scripts actually exist and which tools are available. Do not claim to have executed an unimplemented tool or substitute imagined results for execution logs. Discuss API-dependent project features separately from the default workflow.
 - Long-running work remains subject to usage limits and execution-environment constraints. Save the current state and resume point when interrupted. Do not imply that a skill file guarantees unlimited background execution.
 
+For the local browser application, read [the local workflow protocol](references/local-workflow.md) before proposing or running development, simulations, or packaging. The browser transport currently supports Codex CLI. Other hosts can follow these instructions manually; they are not automatically integrated into the application.
+
 ## Working Record
 
 Read existing competition materials, repositories, and user decisions first. Maintain a working record in the agreed project location, following existing documentation conventions when present. Establish the location if it is missing. Do not ask again for information the user already supplied.
@@ -40,6 +42,8 @@ Distinguish the following in the record:
 Link relevant code, materials, and logs by path. Do not invent user opinions or silently revise earlier decisions. Use detailed record and evaluation templates when those supporting files have been created.
 
 For acceptance conditions, review iterations, evidence records, and resume points, use [scripts/manage_state.py](scripts/manage_state.py). Read the local state tool section in [the validation loop procedure](references/validation-loop.md) before first use. Store each competition's state in its project directory, not inside this skill. This helper records judgments and checks file freshness; it does not execute tests or authenticate approval.
+
+In the local application, the controller owns `progress.json` and records review verdicts. Chat and development roles must not call the state helper to grant themselves passing conditions or invent user acceptance. Propose conditions through `workflow-proposal.json`; the user confirms them in the interface before automatic execution. Use [scripts/project_records.py](scripts/project_records.py) for source, claim, decision, and document records, preserving the actual author and message reference.
 
 ## 1. Research the Competition and Its Context
 
@@ -83,9 +87,13 @@ Propose appropriate execution limits for each project and confirm them. Do not m
 
 Wait for the user's decision when initial conditions remain unanswered. Do not reconfirm settled conditions. Record and act within the scope of decisions explicitly delegated by the user.
 
+For the local controller, write the acceptance contract and bounded execution limits in `workflow-proposal.json` using the [local workflow schema](references/local-workflow.md). This is a proposal, not authorization. After initial confirmation, continue internal development and review without asking for each iteration.
+
 ## 4. Run the Custom Stakeholder Simulation
 
 Read [the simulation procedure](references/simulation.md) when designing, running, or analyzing stakeholder experiments. Adapt the environment to the idea, combining use and adoption situations with information exchange where relevant. Do not force every experiment into a social-media setting.
+
+Use [scripts/simulate.py](scripts/simulate.py) to persist experiments and validate actions. In the browser application, propose the experiment through `simulation-plan.json` and let the controller apply LLM actions after the user confirms the configuration. The implemented action vocabulary is `try`, `adopt`, `reject`, `ask`, `share`, and `wait`; model only scenarios that this vocabulary can represent, or explicitly describe the missing capability.
 
 Compare shortlisted candidates under equivalent conditions. Use research to construct users, non-users, operators, and affected groups, defining each participant's goals, constraints, relationships, and initial information. Separate evidence-backed characteristics from invented scenario settings.
 
@@ -109,6 +117,8 @@ Distinguish simulated reactions from real user research. Do not present simulate
 
 Read [the validation loop procedure](references/validation-loop.md) when establishing acceptance checks, running implementation iterations, reviewing results, or resuming interrupted work. Separate development and review roles. Use a separate reviewer context when the host supports it; otherwise disclose the limitation and perform a distinct evidence-based review pass without claiming independent validation.
 
+In the local application, the controller starts fresh development and review processes with separate contexts. Development has workspace-write access; review has read-only access. Review must report blocked checks as unverified when its environment cannot execute them. Do not request broader permissions or count a sandbox failure as a passing check. The controller, not a chat response, decides whether the recorded conditions and execution limits permit another iteration.
+
 Elaborate the plan within the agreed scope and first build a minimal product with a working core flow. Incorporate evidence from simulations and real research. For ideathons or other tracks, produce the required proposal or prototype instead of imposing a software product.
 
 - For existing projects, read applicable AGENTS.md instructions and execution guidance, and record relevant check results before changes. If a new project has no tests, state that and establish a validation method.
@@ -130,6 +140,8 @@ Distinguish change requests, goal changes, and final acceptance in user feedback
 ## 7. Finalize Deliverables That Match the Actual Results
 
 After the user accepts the result, create the required report, presentation, demo, source package, executable, or other deliverables according to the latest official submission instructions and templates. Do not generate a standard bundle of unrequested outputs.
+
+Propose `submission-spec.json` using [assets/submission-spec.json](assets/submission-spec.json), whose `example` illustrates the build input. The local controller supplies the actual acceptance reference and accepted snapshot. Use [scripts/build_submission.py](scripts/build_submission.py) for Markdown, HTML, and source ZIP output. PDF, DOCX, and PPTX generation and rendered page-count checks are unsupported by this builder and must remain explicitly incomplete when required. A file manifest is not external submission or visual review.
 
 - Explain how the user's ideas and choices shaped the problem definition, plan, and implementation.
 - Distinguish plans, actual implementation, measured results, simulations, and expected future benefits. Do not fabricate performance figures, interviews, or implemented features.
